@@ -30,7 +30,7 @@ const Persons = ({ persons, searchWord, handleClickDelete }) => {
       {filteredPersons.map(person => (
         <div key={person.id}>
           {person.name} {person.number}
-          <button onClick={() => handleClickDelete(person.id)}>Delete</button>
+          <button onClick={() => handleClickDelete(person.id, person.name, persons)}>Delete</button>
         </div>
       ))}
     </div>
@@ -75,13 +75,18 @@ const App = () => {
     else {
       const newPerson = { name: newName, number: newNumber, id: (persons.length) + 1 }
       phonebookService
-        .create(newPerson)
+        .createName(newPerson)
         .then(newPerson => {setPersons(persons.concat(newPerson))})
     }
   }
   
-  const handleClickDelete = (id) => {
-    console.log(`command to delete person ${id}`)
+  const handleClickDelete = (id, name, persons) => {
+    if (window.confirm(`Do you really want to delete ${name}?`)) {
+      phonebookService
+        .deleteName(id, persons)
+        .then(initialList => {setPersons(initialList)
+      })
+    }
   }
 
   return (
