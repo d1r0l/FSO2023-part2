@@ -27,6 +27,13 @@ const deleteName = async (selectedName, namesList) => {
     )
 }
 
-const phonebookService = { getList, createName, deleteName }
+const changeNumber = (updatedPerson) => {
+    const request = axios.put(`${dbUrl}/${updatedPerson.id}`, updatedPerson)
+    return(
+        request.then(response => response.data)
+    )
+}
+
+const phonebookService = { getList, createName, deleteName, changeNumber }
 
 export default phonebookService
