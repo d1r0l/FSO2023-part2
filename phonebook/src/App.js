@@ -19,7 +19,7 @@ const PersonForm = ({ handleNameChange, handleNumberChange, handleClick}) => {
   )
 }
 
-const Persons = ({ persons, searchWord }) => {
+const Persons = ({ persons, searchWord, handleClickDelete }) => {
   const filteredPersons = persons.filter(person =>
     person.name.toLowerCase().includes(searchWord.toLowerCase()) ||
     person.number.toLowerCase().includes(searchWord.toLowerCase())
@@ -28,7 +28,10 @@ const Persons = ({ persons, searchWord }) => {
   return (
     <div>
       {filteredPersons.map(person => (
-        <div key={person.id}>{person.name} {person.number}</div>
+        <div key={person.id}>
+          {person.name} {person.number}
+          <button onClick={() => handleClickDelete(person.id)}>Delete</button>
+        </div>
       ))}
     </div>
   )
@@ -76,6 +79,10 @@ const App = () => {
         .then(newPerson => {setPersons(persons.concat(newPerson))})
     }
   }
+  
+  const handleClickDelete = (id) => {
+    console.log(`command to delete person ${id}`)
+  }
 
   return (
     <div>
@@ -93,7 +100,8 @@ const App = () => {
       <h2>Numbers</h2>
       <Persons 
         persons={persons} 
-        searchWord={searchWord} 
+        searchWord={searchWord}
+        handleClickDelete={handleClickDelete}
       />
     </div>
   )
