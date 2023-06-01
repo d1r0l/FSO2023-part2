@@ -1,1 +1,1 @@
-## This folder contains exercises 2.6.-2.11.
+## This folder contains exercises 2.6.-2.15.
