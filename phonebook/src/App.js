@@ -37,16 +37,51 @@ const Persons = ({ persons, searchWord, handleClickDelete }) => {
   )
 }
 
+const Notification = ({ message, color }) => {
+  const errorStyle = {
+    color: color ,
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  }
+
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className='error' style={errorStyle}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ searchWord, setSearch ] = useState('')
+  const [ errorMessage, setErrorMessage ] = useState(null)
+  const [ color, setColor ] = useState('green')
   
   useEffect(() => {
     phonebookService
       .getList()
-      .then(initialList => {setPersons(initialList)})
+      .then(initialList => {
+        setPersons(initialList)
+      })
+      .catch(() => {
+        setColor('red')
+        setErrorMessage(
+          `An error occured connecting to server`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 2000)
+      })
   }, [])
 
   const handleNameInputChange = (event) => {
@@ -63,7 +98,6 @@ const App = () => {
 
   const handleClick = (event) => {
     event.preventDefault()
-
     const nameExists = persons.some(person => person.name === newName)
     const numberExists = persons.some(person => person.number === newNumber)
     
@@ -82,14 +116,49 @@ const App = () => {
                 {return(newPerson)} 
               else {return(person)}          
             }))
+            setColor('green')
+            setErrorMessage(
+              `"${newName}" was updated`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 2000)
+          })
+          .catch(() => {
+            setColor('red')
+            setErrorMessage(
+              `Information of "${newName}" have been already removed from server or changed`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 2000)
           })
       }
     }
     else {
       const newPerson = { name: newName, number: newNumber, id: (persons.length) + 1 }
+
       phonebookService
         .createName(newPerson)
-        .then(newPerson => {setPersons(persons.concat(newPerson))})
+        .then(newPerson => {
+          setPersons(persons.concat(newPerson))
+          setColor('green')
+          setErrorMessage(
+            `"${newName}" was added`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 2000)
+        })
+        .catch(() => {
+          setColor('red')
+          setErrorMessage(
+            `An error occured connecting to server`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 2000)
+        })
     }
   }
   
@@ -97,14 +166,32 @@ const App = () => {
     if (window.confirm(`Do you really want to delete ${name}?`)) {
       phonebookService
         .deleteName(id, persons)
-        .then(initialList => {setPersons(initialList)
-      })
+        .then(initialList => {
+          setPersons(initialList)
+          setColor('green')
+          setErrorMessage(
+            `"${name}" was removed`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 2000)
+        })
+        .catch(() => {
+          setColor('red')
+          setErrorMessage(
+            `Information of "${name}" have been already removed from server or changed`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 2000)
+        })
     }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} color={color}/>
       <Filter 
         handleChange={handleSearchInputChange} 
         text='Filter shown with:' 
