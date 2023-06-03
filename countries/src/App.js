@@ -29,6 +29,7 @@ function App() {
         )
         .join(', ')
     ),
+    filterName: country.name.common.toLowerCase(), 
     id: index,
     displayedName: country.name.common
   }))
@@ -75,7 +76,10 @@ function App() {
       else if (filteredQty > 1 & filteredQty <= 10) {
         return(
           filteredCountriesNames.map(country => 
-            <div key={country.id}>{country.displayedName}</div>
+            <div key={country.id}>
+              {country.displayedName}
+              <button onClick={() => setFilter(country.filterName)}>Show</button>
+            </div>
           )
         )
       }
