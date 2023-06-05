@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import countriesService from "./components/countries";
 
 const CountryNotFound = () => {
-  <div>Country not found, specify another filter.</div>;
+  return (
+    <div>Country not found, specify another filter.</div>
+  );
 };
 
 const OneCountryFound = ({ countriesAll, filteredCountriesNames }) => {
