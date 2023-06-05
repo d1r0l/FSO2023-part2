@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const getWeather = async (cityName, countryCode) => {
-  console.log('weather call');
   const apiKey = process.env.REACT_APP_API_KEY;
 
   const getCoordinates = async (cityName, countryCode) => {
