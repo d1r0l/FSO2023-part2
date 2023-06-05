@@ -111,7 +111,12 @@ function App() {
 
   const countriesNamesConcatenated = countriesAll.map((country, index) => ({
     name: country.altSpellings
-      .concat(country.name.common, country.name.official)
+      .concat(
+        country.name.common,
+        country.name.official,
+        Object.values(country.translations).map((item) => item.common),
+        Object.values(country.translations).map((item) => item.official)
+      )
       .join(", "),
     id: index,
     displayedName: country.name.common,
