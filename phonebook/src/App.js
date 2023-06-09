@@ -20,10 +20,14 @@ const PersonForm = ({ handleNameChange, handleNumberChange, handleClick}) => {
 }
 
 const Persons = ({ persons, searchWord, handleClickDelete }) => {
-  const filteredPersons = persons.filter(person =>
-    person.name.toLowerCase().includes(searchWord.toLowerCase()) ||
-    person.number.toLowerCase().includes(searchWord.toLowerCase())
-  )
+  const filteredPersons = persons.filter((person) => {
+    const name = person.name?.toLowerCase()
+    const number = person.number?.toLowerCase()
+    return (
+      name?.includes(searchWord.toLowerCase()) ||
+      number?.includes(searchWord.toLowerCase())
+    )
+  })
 
   return (
     <div>
