@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import phonebookService from "./components/names";
+import phonebookService from "./components/phonebookService";
 
 const Filter = ({ text, handleChange }) => {
   return (
@@ -71,21 +71,19 @@ const App = () => {
   const [ errorMessage, setErrorMessage ] = useState(null)
   const [ color, setColor ] = useState('green')
   
+  const showNotification = (color, message) => {
+    setColor(color)
+    setErrorMessage(message)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 3000)
+  }
+
   useEffect(() => {
-    phonebookService
+      phonebookService
       .getList()
-      .then(initialList => {
-        setPersons(initialList)
-      })
-      .catch(() => {
-        setColor('red')
-        setErrorMessage(
-          `An error occured connecting to server`
-        )
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 2000)
-      })
+      .then(response => setPersons(response))
+      .catch(() => showNotification('red', `An error occured connecting to server`))
   }, [])
 
   const handleNameInputChange = (event) => {
@@ -114,81 +112,38 @@ const App = () => {
 
         phonebookService
           .changeNumber(updatedPerson)
-          .then(newPerson => {
+          .then(updatedPerson => {
             setPersons(persons.map(person => {
-              if (newPerson.id === person.id) 
-                {return(newPerson)} 
+              if (updatedPerson.id === person.id) 
+                {return(updatedPerson)} 
               else {return(person)}          
             }))
-            setColor('green')
-            setErrorMessage(
-              `"${newName}" was updated`
-            )
-            setTimeout(() => {
-              setErrorMessage(null)
-            }, 2000)
+            showNotification('green', `"${newName}" was updated`)
           })
-          .catch(() => {
-            setColor('red')
-            setErrorMessage(
-              `Information of "${newName}" have been already removed from server or changed`
-            )
-            setTimeout(() => {
-              setErrorMessage(null)
-            }, 2000)
-          })
+          .catch(() => showNotification('red', `Information of "${newName}" have been already removed from server or changed`))
       }
     }
     else {
-      const newPerson = { name: newName, number: newNumber, id: (persons.length) + 1 }
-
+      const newPerson = { name: newName, number: newNumber}
       phonebookService
-        .createName(newPerson)
+        .createPerson(newPerson)
         .then(newPerson => {
           setPersons(persons.concat(newPerson))
-          setColor('green')
-          setErrorMessage(
-            `"${newName}" was added`
-          )
-          setTimeout(() => {
-            setErrorMessage(null)
-          }, 2000)
+          showNotification('green', `"${newName}" was added`)
         })
-        .catch(() => {
-          setColor('red')
-          setErrorMessage(
-            `An error occured connecting to server`
-          )
-          setTimeout(() => {
-            setErrorMessage(null)
-          }, 2000)
-        })
+        .catch(() => showNotification('red', `An error occured connecting to server`))
     }
   }
   
-  const handleClickDelete = (id, name, persons) => {
+  const handleClickDelete = (id, name) => {
     if (window.confirm(`Do you really want to delete ${name}?`)) {
       phonebookService
-        .deleteName(id, persons)
-        .then(initialList => {
-          setPersons(initialList)
-          setColor('green')
-          setErrorMessage(
-            `"${name}" was removed`
-          )
-          setTimeout(() => {
-            setErrorMessage(null)
-          }, 2000)
+        .deletePerson(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+          showNotification('green', `"${name}" was removed`)
         })
-        .catch(() => {
-          setColor('red')
-          setErrorMessage(
-            `Information of "${name}" have been already removed from server or changed`
-          )
-          setTimeout(() => {
-            setErrorMessage(null)
-          }, 2000)
-        })
+        .catch(() => showNotification('red', `Information of "${name}" have been already removed from server or changed`))
     }
   }
 
