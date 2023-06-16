@@ -120,7 +120,7 @@ const App = () => {
             }))
             showNotification('green', `"${newName}" was updated`)
           })
-          .catch(() => showNotification('red', `Information of "${newName}" have been already removed from server or changed`))
+          .catch((error) => showNotification('red', error.response.data.error))
       }
     }
     else {
@@ -131,7 +131,7 @@ const App = () => {
           setPersons(persons.concat(newPerson))
           showNotification('green', `"${newName}" was added`)
         })
-        .catch(() => showNotification('red', `An error occured connecting to server`))
+        .catch((error) => showNotification('red', error.response.data.error))
     }
   }
   
@@ -143,7 +143,14 @@ const App = () => {
           setPersons(persons.filter(person => person.id !== id))
           showNotification('green', `"${name}" was removed`)
         })
-        .catch(() => showNotification('red', `Information of "${name}" have been already removed from server or changed`))
+        .catch((error) => {
+          if (error.response.status === 404) {
+            showNotification('red', `Information of "${name}" have been already removed from server or changed`)
+          }
+          else {
+            showNotification('red', error.response.data.error)
+          }
+        })
     }
   }
 
@@ -165,7 +172,7 @@ const App = () => {
       <Persons 
         persons={persons} 
         searchWord={searchWord}
-        handleClickDelete={handleClickDelete}
+        handleClickDelete={handleClickDelete} 
       />
     </div>
   )
